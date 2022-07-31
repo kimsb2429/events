@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Twitter Events'
+Parameters:
+  LatestAmiId:
+    Description: Gets the latest AMI from Systems Manager Parameter store
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t2.large
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t3.large
+    ConstraintDescription: must be a t2 or t3 instance type (micro, small, medium, or large)
+Resources:
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access and HTTP access on the inbound port
+      GroupName: AllowTraffic
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8443
+          ToPort: 8443
+          CidrIp: 0.0.0.0/0
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: prosody
+      ImageId: !Ref LatestAmiId
+      InstanceType: !Ref InstanceType
+      SecurityGroupIds:
+        - !GetAtt InstanceSecurityGroup.GroupId
+      Tags:
+        - Key: Name
+          Value: EC2 Instance for NiFi, MySQL, and Debezium
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          sudo yum update -y
+          sudo amazon-linux-extras install docker
+          sudo service docker start
+          sudo usermod -a -G docker ec2-user
+          sudo chmod 666 /var/run/docker.sock
+          docker run -dit --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=debezium -e MYSQL_USER=mysqluser -e MYSQL_PASSWORD=mysqlpw kimsb2429/debezium-mysql-busdata:latest
+          docker run --name nifi -p 8080:8080 -p 8443:8443 --link mysql:mysql -d apache/nifi:1.12.0
+Outputs:
+  InstanceIP:
+    Description: A reference to the created EC2 Instance
+    Value: !GetAtt MyEC2Instance.PublicIp
