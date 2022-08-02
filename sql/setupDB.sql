@@ -1,6 +1,6 @@
 CREATE TABLE tweets (
-    recordId INT NOT NULL AUTO_INCREMENT
-    ,dataId VARCHAR(20)
-    ,dataText VARCHAR(500)
-    ,PRIMARY KEY (recordId)
+    record_id INT NOT NULL AUTO_INCREMENT
+    ,data_id VARCHAR(20)
+    ,data_text VARCHAR(500)
+    ,PRIMARY KEY (record_id)
 );
