@@ -20,7 +20,7 @@ do
     response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://$ip:8080)
     echo $response
 done
-process_group_id=$(curl http://107.23.254.55:8080/nifi-api/flow/process-groups/root | jq -r '.processGroupFlow.id')
+process_group_id=$(curl http://$ip:8080/nifi-api/flow/process-groups/root | jq -r '.processGroupFlow.id')
 curl -k -F template=@$nifi_template_filepath -X POST http://107.23.254.55:8080/nifi-api/process-groups/$process_group_id/templates/upload
 open http://$ip:8080/nifi/
 ssh -i prosody.pem ec2-user@$ip
