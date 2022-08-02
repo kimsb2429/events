@@ -13,14 +13,11 @@ aws cloudformation wait stack-create-complete --stack-name $stack_name
 sleep 60
 ip=$(aws cloudformation describe-stacks --query "Stacks[?StackName=='$stack_name'].Outputs[].OutputValue" --output text)
 echo $ip
+curl --write-out '%{http_code}' --silent --output /dev/null http://$ip:8080
 response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://$ip:8080)
 echo $response
-while [ $response -ne 200 ]
-do
-    sleep 10
-    response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://$ip:8080)
-    echo $response
-done
+while [[ "$(curl -s -o /dev/null --write-out '%{http_code}' --silent --output /dev/null http://$ip:8080)" != "200" ]]; do sleep 10; done
+echo $response
 process_group_id=$(curl http://$ip:8080/nifi-api/flow/process-groups/root | jq -r '.processGroupFlow.id')
 curl -k -F template=@$nifi_template_filepath -X POST http://$ip:8080/nifi-api/process-groups/$process_group_id/templates/upload
 open http://$ip:8080/nifi/
