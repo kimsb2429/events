@@ -1,6 +1,6 @@
-read -p "Stack Name: " stack_name || stack_name='wcd-final-stack'
-read -p "Template Filepath (your-template.yaml): " template_filepath || template_filepath='wcd-final-stack.yaml'
-read -p "NiFi Template Filepath (nifi-template.xml): " nifi_template_filepath || nifi_template_filepath='twitter.xml'
+read -p "Stack Name [wcd-final-stack]: " stack_name || stack_name='wcd-final-stack'
+read -p "Template Filepath [wcd-final-stack.yaml]: " template_filepath || template_filepath='wcd-final-stack.yaml'
+read -p "NiFi Template Filepath [twitter.xml]: " nifi_template_filepath || nifi_template_filepath='twitter.xml'
 aws cloudformation delete-stack --stack-name $stack_name 
 aws cloudformation wait stack-delete-complete --stack-name $stack_name
 aws cloudformation create-stack --stack-name $stack_name --template-body file://$template_filepath
