@@ -18,4 +18,5 @@ sleep 90
 process_group_id=$(curl http://$ip:8080/nifi-api/flow/process-groups/root | jq -r '.processGroupFlow.id')
 curl -k -F template=@$nifi_template_filepath -X POST http://$ip:8080/nifi-api/process-groups/$process_group_id/templates/upload
 open http://$ip:8080/nifi/
+echo "ssh -i prosody.pem ec2-user@$ip"
 ssh -i prosody.pem ec2-user@$ip
