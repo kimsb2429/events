@@ -11,10 +11,11 @@ aws cloudformation wait stack-delete-complete --stack-name $stack_name
 aws cloudformation create-stack --stack-name $stack_name --template-body file://$template_filepath
 aws cloudformation wait stack-create-complete --stack-name $stack_name
 sleep 60
-ip=$(aws cloudformation describe-stacks --query "Stacks[?StackName=='wcd-final-stack'].Outputs[].OutputValue" --output text)
+ip=$(aws cloudformation describe-stacks --query "Stacks[?StackName=='$stack_name'].Outputs[].OutputValue" --output text)
 echo $ip
 response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://$ip:8080)
-while [ $response -ne '200' ]
+echo $response
+while [ $response -ne 200 ]
 do
     sleep 10
     response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://$ip:8080)
