@@ -69,7 +69,7 @@ Resources:
           sudo usermod -a -G docker ec2-user
           sudo chmod 666 /var/run/docker.sock
           docker run -dit --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=debezium -e MYSQL_USER=mysqluser -e MYSQL_PASSWORD=mysqlpw kimsb2429/debezium-mysql-tweetdata:latest
-          docker run --name nifi -p 8080:8080 -p 8443:8443 --link mysql:mysql -d apache/nifi:1.12.0
+          docker run --name nifi -p 8080:8080 -p 8443:8443 --link mysql:mysql -d kimsb2429/nifi-tweetdata:latest
 Outputs:
   InstanceIP:
     Description: A reference to the created EC2 Instance
