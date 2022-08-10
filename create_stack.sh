@@ -17,7 +17,7 @@ sleep 100
 # until [[ $(curl --insecure --write-out '%{http_code}' --silent --output /dev/null http://$ip:8080) ]]; do sleep 10; done
 process_group_id=$(curl http://$ip:8080/nifi-api/flow/process-groups/root | jq -r '.processGroupFlow.id')
 curl -k -F template=@$nifi_template_filepath -X POST http://$ip:8080/nifi-api/process-groups/$process_group_id/templates/upload
-python3 update_nifi_sensitive_data.py $ip
+python3 update_nifi_sensitive_data.py $ip ${pwd}
 open http://$ip:8080/nifi/
 echo "ssh -i prosody.pem ec2-user@$ip"
 ssh -i prosody.pem ec2-user@$ip

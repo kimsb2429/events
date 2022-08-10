@@ -1,6 +1,6 @@
 import nipyapi, yaml, sys
 
-with open('/Users/jaekim/.twitter-keys.yaml', 'r') as file:
+with open(f'{sys.argv[2]}/.twitter-keys.yaml', 'r') as file:
     keys = yaml.load(file, Loader=yaml.FullLoader)
 
 ip = sys.argv[1]
